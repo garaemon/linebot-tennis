@@ -40,14 +40,11 @@ class Bot(object):
         return (channel_secret, channel_access_token)
 
     def handle_request(self, request):
-        print('handle_request METHOD={0}'.format(request.method))
         if request.method != 'POST':
             return Response('404', status=404)
-        print(request.headers)
         signature = request.headers.get('X_LINE_SIGNATURE')
         wsgi_input = request.headers.get('wsgi.input')
         content_length = int(request.headers.get('CONTENT_LENGTH'))
-        print((signature, wsgi_input, content_length))
         #body = wsgi_input.read(content_length).decode('utf-8')
         body = request.stream.read().decode('utf-8')
 
@@ -57,7 +54,6 @@ class Bot(object):
             return Response('Bad request', status=400)
 
         for event in events:
-            print(event)
             if self.is_event_for_connection_test(event):
                 print('Ignore the message because it is connection test')
             elif event.type == 'message' and event.message.type == 'text':
