@@ -18,10 +18,12 @@ bot = Bot()
 
 @app.route('/callback', methods=['GET', 'POST'])
 def app_callback():
+    print('/callback')
     return bot.handle_request(request)
 
 @app.route('/image/jingu/<year>/<month>/<day>')
 def jingu_image(year, month, day):
+    print('/image/jingu')
     return jingu.serve_image(int(year), int(month), int(day))
 
 if __name__ == '__main__':
