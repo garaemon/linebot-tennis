@@ -111,7 +111,7 @@ def demo():
     for i in range(7):
         ax = plt.subplot(711 + i)
         target_day = today + timedelta(days=i)
-        ax.set_title('%d/%d' % (target_day.month, target_day.day))
+        ax.set_title('%d/%d(%s)' % (target_day.month, target_day.day, target_day.strftime('%a')))
         parse_reservation_page(query_reservation_page(target_day))
         ax.axis('off')
         ax.grid('off')
@@ -125,7 +125,7 @@ def serve_image(year, month, day):
         ax = plt.subplot(711 + i)
         target_day = start_day + timedelta(days=i)
         print(target_day)
-        ax.set_title('%d/%d' % (target_day.month, target_day.day))
+        ax.set_title('%d/%d(%s)' % (target_day.month, target_day.day, target_day.strftime('%a')))
         parse_reservation_page(query_reservation_page(target_day))
         ax.axis('off')
         ax.grid('off')
