@@ -1,1 +1,1 @@
-web: gunicorn bin.linebot-tennis:main --log-file=-
+web: gunicorn bin.linebot-tennis:app     --log-file=-
