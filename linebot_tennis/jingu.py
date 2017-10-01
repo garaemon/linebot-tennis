@@ -70,7 +70,7 @@ def parse_tennis_footsal_court_table(table):
 
 
 def url_for_the_date(date):
-    return 'https://cb9959ad.ngrok.io/image/jingu/%d/%02d/%02d' % (date.year, date.month, date.day)
+    return 'https://linebot-tennis.herokuapp.com/image/jingu/%d/%02d/%02d' % (date.year, date.month, date.day)
 
 def query_reservation_page(date):
     y = date.year
