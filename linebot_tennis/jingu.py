@@ -1,8 +1,11 @@
 #!/usr/bin/python
 
+
+from multiprocessing import Pool
 from datetime import (datetime, timedelta)
 import io
 import urllib
+import urllib.request
 
 from pyquery import PyQuery as pq
 from flask import Response, make_response
@@ -77,11 +80,14 @@ def query_reservation_page(date):
     m = date.month
     d = date.day
     url = '%s?y=%04d&m=%02d&d=%02d' % (JINGU_URL, y, m, d)
-    dom = pq(url)
-    return dom
+    with urllib.request.urlopen(url) as response:
+        return response.read()
+    # dom = pq(url)
+    # return dom
 
 
-def parse_reservation_page(dom):
+def parse_reservation_page(page):
+    dom = pq(page)
     tennis_only_court_table = dom(TENNIS_ONLY_COURT_SELECTOR).parent()('table')
     tennis_only_court_reserved_info = parse_tennis_only_court_table(tennis_only_court_table)
     tennis_only_court_color = convert_reserved_info_to_colors(tennis_only_court_reserved_info)
@@ -108,11 +114,14 @@ def convert_reserved_info_to_colors(reserved_info):
 def demo():
     today = datetime.today()
     fig = plt.figure(figsize=(30, 8))
-    for i in range(7):
-        ax = plt.subplot(711 + i)
+
+    with Pool(7) as p:
+        contents_array = p.map(query_reservation_page, [today + timedelta(days=i) for i in range(7)])
+    for i, content in zip(range(7), contents_array):
         target_day = today + timedelta(days=i)
+        ax = plt.subplot(711 + i)
         ax.set_title('%d/%d(%s)' % (target_day.month, target_day.day, target_day.strftime('%a')))
-        parse_reservation_page(query_reservation_page(target_day))
+        parse_reservation_page(content)
         ax.axis('off')
         ax.grid('off')
     plt.savefig('test.png')
@@ -121,11 +130,14 @@ def demo():
 def serve_image(year, month, day):
     start_day = datetime(year, month, day)
     fig = plt.figure(figsize=(30, 8))
-    for i in range(7):
+    with Pool(7) as p:
+        contents_array = p.map(query_reservation_page,
+                               [start_day + timedelta(days=i) for i in range(7)])
+    for i, content in zip(range(7), contents_array):
         ax = plt.subplot(711 + i)
         target_day = start_day + timedelta(days=i)
         ax.set_title('%d/%d(%s)' % (target_day.month, target_day.day, target_day.strftime('%a')))
-        parse_reservation_page(query_reservation_page(target_day))
+        parse_reservation_page(content)
         ax.axis('off')
         ax.grid('off')
     canvas = FigureCanvasAgg(fig)
