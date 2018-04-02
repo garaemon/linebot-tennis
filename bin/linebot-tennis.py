@@ -3,7 +3,7 @@
 import os
 import sys
 
-from flask import (Flask, request)
+from flask import (Flask, request, send_file)
 
 # add load path to ../linebot-tennis
 if __name__ == '__main__':
@@ -23,6 +23,13 @@ def app_callback():
 @app.route('/image/jingu/<year>/<month>/<day>')
 def jingu_image(year, month, day):
     return jingu.serve_image(int(year), int(month), int(day))
+
+@app.route('/image/nowloading.jpg')
+def nowloading_image():
+    print(__file__)
+    return send_file(os.path.join(
+        os.path.dirname(os.path.realpath(__file__)),
+        '..', 'nowloading.jpg'))
 
 if __name__ == '__main__':
     app.run()

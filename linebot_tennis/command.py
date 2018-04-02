@@ -39,5 +39,7 @@ class JinguReservationStateThisWeak(Command):
     def reply(self, body, token, api):
         today = datetime.today()
         image_url = jingu_url_for_the_date(today)
-        api.reply_message(token, ImageSendMessage(original_content_url=image_url,
-                          preview_image_url=image_url))
+        api.reply_message(token, ImageSendMessage(
+            original_content_url=image_url,
+            preview_image_url='https://linebot-tennis.herokuapp.com/image/nowloading.jpg'))
+            #preview_image_url=image_url))
