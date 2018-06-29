@@ -6,20 +6,13 @@ import wsgiref.simple_server
 
 from flask import Response
 
-from linebot import (
-    LineBotApi, WebhookParser
-)
-from linebot.exceptions import (
-    InvalidSignatureError
-)
-from linebot.models import (
-    MessageEvent, TextMessage, TextSendMessage
-)
+from linebot import (LineBotApi, WebhookParser)
+from linebot.exceptions import (InvalidSignatureError)
+from linebot.models import (MessageEvent, TextMessage, TextSendMessage)
 from linebot.utils import PY3
 
-from .command import (
-    PingCommand, JinguReservationStateThisWeak
-)
+from .command import (PingCommand, JinguReservationStateThisWeak)
+
 
 class Bot(object):
     COMMAND_PREFIX = '@bot'
@@ -32,11 +25,16 @@ class Bot(object):
 
     def check_required_environmental_variables(self):
         channel_secret = os.getenv('LINEBOT_TENNIS_LINE_CHANNEL_SECRET', None)
-        channel_access_token = os.getenv('LINEBOT_TENNIS_LINE_CHANNEL_ACCESS_TOKEN', None)
+        channel_access_token = os.getenv(
+            'LINEBOT_TENNIS_LINE_CHANNEL_ACCESS_TOKEN', None)
         if channel_secret is None:
-            raise Exception('Specify LINEBOT_TENNIS_LINE_CHANNEL_SECRET as environment variable.')
+            raise Exception(
+                'Specify LINEBOT_TENNIS_LINE_CHANNEL_SECRET as environment variable.'
+            )
         if channel_access_token is None:
-            raise Exception('Specify LINEBOT_TENNIS_LINE_CHANNEL_ACCESS_TOKEN as environment variable.')
+            raise Exception(
+                'Specify LINEBOT_TENNIS_LINE_CHANNEL_ACCESS_TOKEN as environment variable.'
+            )
         return (channel_secret, channel_access_token)
 
     def handle_request(self, request):
@@ -62,13 +60,14 @@ class Bot(object):
         return Response('OK', status=200)
 
     def send_help_string(self, reply_token):
-        help_string = 'Available commands:\n' + '\n'.join([c.help() for c in self.commands])
-        self.line_bot_api.reply_message(reply_token, TextSendMessage(text=help_string))
+        help_string = 'Available commands:\n' + '\n'.join(
+            [c.help() for c in self.commands])
+        self.line_bot_api.reply_message(
+            reply_token, TextSendMessage(text=help_string))
 
     def is_event_for_connection_test(self, event):
         return (event.type == 'message' and
-                (event.message.id == '100001' or
-                 event.message.id == '100002'))
+                (event.message.id == '100001' or event.message.id == '100002'))
 
     def handle_message(self, message_text, reply_token):
         if message_text.startswith(self.COMMAND_PREFIX):
