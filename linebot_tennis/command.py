@@ -42,13 +42,12 @@ class JinguReservationStateThisWeek(Command):
         today = datetime.today()
         image_url = jingu_url_for_the_date(today)
         api.reply_message(
-            token,
-            ImageSendMessage(
-                original_content_url=image_url,
-                preview_image_url=
-                'https://linebot-tennis.herokuapp.com/image/nowloading.jpg'))
-        api.reply_message(
-            token,
-            TextSendMessage(
-                text='webからもこの結果を見ることができます {url}'.format(jingu_url_for_html(today))))
-        #preview_image_url=image_url))
+            token, [
+                ImageSendMessage(
+                    original_content_url=image_url,
+                    preview_image_url=
+                    'https://linebot-tennis.herokuapp.com/image/nowloading.jpg'
+                ),
+                TextSendMessage(text='webからもこの結果を見ることができます {url}'.format(
+                    jingu_url_for_html(today)))
+            ])
