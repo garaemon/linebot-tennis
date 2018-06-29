@@ -14,13 +14,15 @@ matplotlib.use('agg')
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_agg import FigureCanvasAgg
 
-
 JINGU_URL = 'http://www.meijijingugaien.jp/sports/futsal/reserve.php'
 TENNIS_ONLY_COURT_SELECTOR = '#anc01'
 TENNIS_FOOTSAL_COURT_SELECTOR = '#anc02'
-TIME_TITLES = ['7:00-8:00', '8:00-9:00', '9:00-10:00', '10:00-11:00', '11:00-12:00',
-               '12:00-13:00', '13:00-14:00', '14:00-15:00', '15:00-16:00', '16:00-17:00','17:00-18:00',
-               '18:00-19:00', '19:00-20:00', '20:00-21:00', '21:00-22:00', '22:00-23:00']
+TIME_TITLES = [
+    '7:00-8:00', '8:00-9:00', '9:00-10:00', '10:00-11:00', '11:00-12:00',
+    '12:00-13:00', '13:00-14:00', '14:00-15:00', '15:00-16:00', '16:00-17:00',
+    '17:00-18:00', '18:00-19:00', '19:00-20:00', '20:00-21:00', '21:00-22:00',
+    '22:00-23:00'
+]
 FREE_COLOR = (0.48, 0.75, 0.94)
 RESERVED_COLOR = (0.93, 0.4, 0.4)
 
@@ -62,8 +64,11 @@ def parse_tennis_footsal_court_table(table):
     reserved_info_result = []
     court_num = len(reserved_info_array)
     for time_index in range(len(TIME_TITLES)):
-        reserved_info_of_time_index_array = [info[time_index] for info in reserved_info_array]
-        is_free = any([info == 'free' for info in reserved_info_of_time_index_array])
+        reserved_info_of_time_index_array = [
+            info[time_index] for info in reserved_info_array
+        ]
+        is_free = any(
+            [info == 'free' for info in reserved_info_of_time_index_array])
         if is_free:
             reserved_info_result.append('free')
         else:
@@ -72,7 +77,9 @@ def parse_tennis_footsal_court_table(table):
 
 
 def url_for_the_date(date):
-    return 'https://linebot-tennis.herokuapp.com/image/jingu/%d/%02d/%02d' % (date.year, date.month, date.day)
+    return 'https://linebot-tennis.herokuapp.com/image/jingu/%d/%02d/%02d' % (
+        date.year, date.month, date.day)
+
 
 async def query_reservation_page(date):
     y = date.year
@@ -88,17 +95,24 @@ async def query_reservation_page(date):
 def parse_reservation_page(page):
     dom = pq(page)
     tennis_only_court_table = dom(TENNIS_ONLY_COURT_SELECTOR).parent()('table')
-    tennis_only_court_reserved_info = parse_tennis_only_court_table(tennis_only_court_table)
-    tennis_only_court_color = convert_reserved_info_to_colors(tennis_only_court_reserved_info)
-    tennis_footsal_court_table = dom(TENNIS_FOOTSAL_COURT_SELECTOR).parent()('table')
+    tennis_only_court_reserved_info = parse_tennis_only_court_table(
+        tennis_only_court_table)
+    tennis_only_court_color = convert_reserved_info_to_colors(
+        tennis_only_court_reserved_info)
+    tennis_footsal_court_table = dom(TENNIS_FOOTSAL_COURT_SELECTOR).parent()(
+        'table')
     tennis_footsal_court_reserved_info = parse_tennis_footsal_court_table(
         tennis_footsal_court_table)
-    tennis_footsal_court_color = convert_reserved_info_to_colors(tennis_footsal_court_reserved_info)
-    return plt.table(colLabels=TIME_TITLES,
-                     rowLabels=['tennis', 'footsal'],
-                     cellText=[tennis_only_court_reserved_info, tennis_footsal_court_reserved_info],
-                     cellColours=[tennis_only_court_color, tennis_footsal_court_color],
-                     loc='center')
+    tennis_footsal_court_color = convert_reserved_info_to_colors(
+        tennis_footsal_court_reserved_info)
+    return plt.table(
+        colLabels=TIME_TITLES,
+        rowLabels=['tennis', 'footsal'],
+        cellText=[
+            tennis_only_court_reserved_info, tennis_footsal_court_reserved_info
+        ],
+        cellColours=[tennis_only_court_color, tennis_footsal_court_color],
+        loc='center')
 
 
 def convert_reserved_info_to_colors(reserved_info):
@@ -110,16 +124,20 @@ def convert_reserved_info_to_colors(reserved_info):
             colors.append(RESERVED_COLOR)
     return colors
 
+
 def demo():
     today = datetime.today()
     fig = plt.figure(figsize=(30, 8))
 
     with Pool(7) as p:
-        contents_array = p.map(query_reservation_page, [today + timedelta(days=i) for i in range(7)])
+        contents_array = p.map(
+            query_reservation_page,
+            [today + timedelta(days=i) for i in range(7)])
     for i, content in zip(range(7), contents_array):
         target_day = today + timedelta(days=i)
         ax = plt.subplot(711 + i)
-        ax.set_title('%d/%d(%s)' % (target_day.month, target_day.day, target_day.strftime('%a')))
+        ax.set_title('%d/%d(%s)' % (target_day.month, target_day.day,
+                                    target_day.strftime('%a')))
         parse_reservation_page(content)
         ax.axis('off')
         ax.grid('off')
@@ -130,14 +148,17 @@ def serve_image(year, month, day):
     start_day = datetime(year, month, day)
     fig = plt.figure(figsize=(30, 8))
     loop = asyncio.get_event_loop()
-    tasks, _ = loop.run_until_complete(asyncio.wait([
-        query_reservation_page(start_day + timedelta(days=i))
-        for i in range(7)]))
+    tasks, _ = loop.run_until_complete(
+        asyncio.wait([
+            query_reservation_page(start_day + timedelta(days=i))
+            for i in range(7)
+        ]))
     contents_array = [task.result() for task in tasks]
     for i, content in zip(range(7), contents_array):
         ax = plt.subplot(711 + i)
         target_day = start_day + timedelta(days=i)
-        ax.set_title('%d/%d(%s)' % (target_day.month, target_day.day, target_day.strftime('%a')))
+        ax.set_title('%d/%d(%s)' % (target_day.month, target_day.day,
+                                    target_day.strftime('%a')))
         parse_reservation_page(content)
         ax.axis('off')
         ax.grid('off')
