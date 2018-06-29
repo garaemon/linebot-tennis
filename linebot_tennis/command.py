@@ -3,6 +3,7 @@ from datetime import (datetime, timedelta)
 from linebot.models import (TextSendMessage, ImageSendMessage)
 
 from .jingu import url_for_the_date as jingu_url_for_the_date
+from .jingu import url_for_html as jingu_url_for_html
 
 
 class Command(object):
@@ -46,4 +47,8 @@ class JinguReservationStateThisWeek(Command):
                 original_content_url=image_url,
                 preview_image_url=
                 'https://linebot-tennis.herokuapp.com/image/nowloading.jpg'))
+        api.reply_message(
+            token,
+            TextSendMessage(
+                text='webからもこの結果を見ることができます {url}'.format(jingu_url_for_html(today))))
         #preview_image_url=image_url))

@@ -80,6 +80,10 @@ def url_for_the_date(date):
     return 'https://linebot-tennis.herokuapp.com/image/jingu/%d/%02d/%02d' % (
         date.year, date.month, date.day)
 
+def url_for_html(date):
+    return 'https://linebot-tennis.herokuapp.com/jingu/%d/%02d/%02d' % (
+        date.year, date.month, date.day)
+
 
 async def query_reservation_page(date, index):
     y = date.year
@@ -177,6 +181,31 @@ def serve_image(year, month, day):
     response.mimetype = 'image/png'
     return response
 
+
+def serve_html(year, month, day):
+    now_str = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    return '''<html>
+    <head>
+    <style>
+    img {{
+      max-width: 100%;
+    }}
+    </style>
+    </head>
+    <body>
+    <h1>神宮球場前テニスコート予約状況</h1>
+    <p>
+    <strong>画像の取得には時間がかかることがあります</strong>
+    </p>
+    <p>
+    <a href={image_url}><img src={image_url} alt-"画像取得中"></img></a>
+    </p>
+    <p>テニスコートの予約状況は<a href="{jingu_url}">jingu_url</a>から取得しています</p>
+    <p>予約の電話番号は 03-3403-0923 です.</p>
+    run at {now}
+    </body>
+    </html>
+    '''.format(image_url=url_for_the_date(datetime.now()), jingu_url=JINGU_URL, now=now_str)
 
 if __name__ == '__main__':
     demo()

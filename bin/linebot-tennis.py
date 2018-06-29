@@ -24,6 +24,10 @@ def app_callback():
 def jingu_image(year, month, day):
     return jingu.serve_image(int(year), int(month), int(day))
 
+@app.route('/jingu/<year>/<month>/<day>')
+def jingu_web(year, month, day):
+    return jingu.serve_html(int(year), int(month), int(day))
+
 @app.route('/image/nowloading.jpg')
 def nowloading_image():
     print(__file__)
