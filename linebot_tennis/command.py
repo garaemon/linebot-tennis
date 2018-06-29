@@ -29,9 +29,9 @@ class PingCommand(Command):
         api.reply_message(token, TextSendMessage(text='pong'))
 
 
-class JinguReservationStateThisWeak(Command):
+class JinguReservationStateThisWeek(Command):
     def help(self):
-        return 'thisweek -- show this weak reservation @ jingu tennis court'
+        return 'thisweek -- show this week reservation @ jingu tennis court'
 
     def is_match(self, message):
         return message.startswith('thisweek')

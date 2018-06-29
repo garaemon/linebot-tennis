@@ -11,7 +11,7 @@ from linebot.exceptions import (InvalidSignatureError)
 from linebot.models import (MessageEvent, TextMessage, TextSendMessage)
 from linebot.utils import PY3
 
-from .command import (PingCommand, JinguReservationStateThisWeak)
+from .command import (PingCommand, JinguReservationStateThisWeek)
 
 
 class Bot(object):
@@ -19,7 +19,7 @@ class Bot(object):
 
     def __init__(self):
         secret, access_token = self.check_required_environmental_variables()
-        self.commands = [PingCommand(), JinguReservationStateThisWeak()]
+        self.commands = [PingCommand(), JinguReservationStateThisWeek()]
         self.line_bot_api = LineBotApi(access_token)
         self.parser = WebhookParser(secret)
 
