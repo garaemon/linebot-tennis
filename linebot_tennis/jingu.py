@@ -81,13 +81,14 @@ def url_for_the_date(date):
         date.year, date.month, date.day)
 
 
-async def query_reservation_page(date):
+async def query_reservation_page(date, index):
     y = date.year
     m = date.month
     d = date.day
     url = '%s?y=%04d&m=%02d&d=%02d' % (JINGU_URL, y, m, d)
+    print('Querying %s' % (url))
     with urllib.request.urlopen(url) as response:
-        return response.read()
+        return (response.read(), index, url)
     # dom = pq(url)
     # return dom
 
@@ -148,13 +149,20 @@ def serve_image(year, month, day):
     start_day = datetime(year, month, day)
     fig = plt.figure(figsize=(30, 8))
     loop = asyncio.get_event_loop()
+    print('start_day', start_day)
     tasks, _ = loop.run_until_complete(
         asyncio.wait([
-            query_reservation_page(start_day + timedelta(days=i))
+            query_reservation_page(start_day + timedelta(days=i), i)
             for i in range(7)
         ]))
     contents_array = [task.result() for task in tasks]
-    for i, content in zip(range(7), contents_array):
+    # contents_array is a list of (url, index, url)
+    # sort contents_array by index because asyncio.wait may change the order of
+    # range.
+    sorted_contents = sorted(contents_array, key=lambda x: x[1])
+    for i, content_tuple in zip(range(7), sorted_contents):
+        (content, index, url) = content_tuple
+        print(i, index, url)
         ax = plt.subplot(711 + i)
         target_day = start_day + timedelta(days=i)
         ax.set_title('%d/%d(%s)' % (target_day.month, target_day.day,
