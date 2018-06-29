@@ -201,7 +201,7 @@ def serve_html(year, month, day):
     <a href={image_url}><img src={image_url} alt-"画像取得中"></img></a>
     </p>
     <p>テニスコートの予約状況は<a href="{jingu_url}">jingu_url</a>から取得しています</p>
-    <p>予約の電話番号は 03-3403-0923 です.</p>
+    <p>予約の電話番号は <a href="tel:03-3403-0923">03-3403-0923</a> です.</p>
     run at {now}
     </body>
     </html>
