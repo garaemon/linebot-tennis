@@ -49,5 +49,5 @@ class JinguReservationStateThisWeek(Command):
                     'https://linebot-tennis.herokuapp.com/image/nowloading.jpg'
                 ),
                 TextSendMessage(text='webからもこの結果を見ることができます {url}'.format(
-                    jingu_url_for_html(today)))
+                    url=jingu_url_for_html(today)))
             ])
