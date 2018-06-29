@@ -80,6 +80,7 @@ def url_for_the_date(date):
     return 'https://linebot-tennis.herokuapp.com/image/jingu/%d/%02d/%02d' % (
         date.year, date.month, date.day)
 
+
 def url_for_html(date):
     return 'https://linebot-tennis.herokuapp.com/jingu/%d/%02d/%02d' % (
         date.year, date.month, date.day)
@@ -205,7 +206,11 @@ def serve_html(year, month, day):
     run at {now}
     </body>
     </html>
-    '''.format(image_url=url_for_the_date(datetime.now()), jingu_url=JINGU_URL, now=now_str)
+    '''.format(
+        image_url=url_for_the_date(datetime.now()),
+        jingu_url=JINGU_URL,
+        now=now_str)
+
 
 if __name__ == '__main__':
     demo()
